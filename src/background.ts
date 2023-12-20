@@ -1,7 +1,6 @@
 import { pipeline, env, Pipeline } from '@xenova/transformers';
 
 env.allowLocalModels = false;
-env.allowRemoteModels = true;
 env.backends.onnx.wasm.numThreads = 1;
 
 interface IProgressProps {
@@ -30,8 +29,16 @@ class AnswererSingleton {
     }
 }
 
-const onProgress = (props: IProgressProps) => {
+const onProgress = async (props: IProgressProps) => {
     console.log('progress', props);
+
+    const [tab] = await chrome.tabs.query({active: true, lastFocusedWindow: true});
+    
+    if (tab) {
+        const response = await chrome.tabs.sendMessage(tab.id as number, {greeting: "hello"});
+        // do something with response here, not outside the function
+        console.log(response);
+    }
     // chrome.runtime.sendMessage(props.status, { task: props.task, model: props.model });
 };
 
@@ -54,10 +61,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     
     console.log('ENQUIRE caught >> ', message, sender);
 
-    answer(message.text, 'His weight is 40 kg.').then((response) => {
+    answer(message.text, message.context).then((response) => {
         sendResponse(response);
     });
 
     return true;
 });
-console.log('HI from BG');

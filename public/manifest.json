@@ -13,30 +13,18 @@
         "default_title": "Enquiry AI",
         "default_popup": "popup.html"
     },
-    "content_scripts": [
-        {
-          "matches": [
-            "<all_urls>"
-          ],
-          "js": [
-            "content.js"
-          ]
-        }
-    ],
     "background": {
       "service_worker": "background.js",
       "type": "module"
     },
-    "permissions": [
-      "activeTab",
-      "scripting",
-      "contextMenus",
-      "storage",
-      "unlimitedStorage"
+    "permissions": ["activeTab", "scripting"],
+    "host_permissions": ["*://*/*", "<all_urls>"],
+    "content_scripts": [
+      {
+        "matches": ["<all_urls>"],
+        "js": ["content.js"]
+      }
     ],
-    "host_permissions": [
-      "<all_urls>"
-    ], 
     "content_security_policy": {
         "extension_pages": "script-src 'self' 'wasm-unsafe-eval'"
     },
